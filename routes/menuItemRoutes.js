@@ -3,9 +3,16 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const foodItemController = require("../controllers/menuItemController");
+const { upload, resizeImage } = require("../config/upload");
 
 // Route to add a new food item
-router.post("/menu-items/add", auth, foodItemController.addFoodItem);
+router.post(
+  "/menu-items/add",
+  auth,
+  upload.single("image"),
+  resizeImage,
+  foodItemController.addFoodItem
+);
 
 // Route to get all food items
 router.get("/menu-items", foodItemController.getAllFoodItems);

@@ -1,16 +1,30 @@
 // controllers/foodItemController.js
 const db = require("../config/db");
+const path = require("path");
+const fs = require("fs");
 
 // Add a new food item
 exports.addFoodItem = (req, res) => {
   const { name, description, price, categoryId, isVeg, isFeatured, status } =
     req.body;
+  const image = req.file;
 
   const sql =
-    "INSERT INTO menu_items (name, description, price, categoryId, isVeg, isFeatured, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO menu_items (name, description, price, categoryId, isVeg, isFeatured, status, image, smallImage, mediumImage) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?)";
   db.query(
     sql,
-    [name, description, price, categoryId, isVeg, isFeatured, status],
+    [
+      name,
+      description,
+      price,
+      categoryId,
+      isVeg,
+      isFeatured,
+      status,
+      image.filename,
+      image.smallImage,
+      image.mediumImage,
+    ],
     (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({
@@ -24,7 +38,7 @@ exports.addFoodItem = (req, res) => {
 // Get all food items
 exports.getAllFoodItems = (req, res) => {
   const sql = `
-    SELECT fi.id, fi.name, fi.description, fi.price, fi.isVeg, fi.isFeatured, fi.status, fi.createdAt, c.name AS category
+    SELECT fi.id, fi.name, fi.description, fi.price, fi.isVeg, fi.isFeatured, fi.status, fi.createdAt, fi.smallImage, c.name AS category
     FROM menu_items fi
     LEFT JOIN categories c ON fi.categoryId = c.id
   `;
